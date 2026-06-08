@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Contenedores UI Supabase</string>
+    <string-array name="niveles">
+        <item>Primero</item>
+        <item>Segundo</item>
+        <item>Tercero</item>
+        <item>Cuarto</item>
+        <item>Quinto</item>
+        <item>Sexto</item>
+        <item>Séptimo</item>
+    </string-array>
+</resources>
