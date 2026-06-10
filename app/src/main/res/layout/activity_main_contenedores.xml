@@ -13,57 +13,56 @@
         android:layout_width="268dp"
         android:layout_height="109dp"
         android:layout_marginTop="16dp"
+        android:contentDescription="@string/app_name"
+        android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/logo" />
+        android:src="@drawable/logo" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tilSemestre"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/lblSemestre"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:text="Semestre"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgLogo" />
+
+    <Spinner
+        android:id="@+id/spnSemestre"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
-        android:background="@color/white"
-        android:hint="Semestre"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imgLogo">
+        app:layout_constraintTop_toBottomOf="@+id/lblSemestre" />
 
-        <AutoCompleteTextView
-            android:id="@+id/actvListaNiveles"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:inputType="none"
-            app:dropDownBackgroundTint="@color/white"
-            app:simpleItems="@array/niveles" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tilMaterias"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/lblMaterias"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:background="@color/white"
-        android:hint=" Materias"
-        app:layout_constraintEnd_toEndOf="@+id/tilSemestre"
-        app:layout_constraintStart_toStartOf="@+id/tilSemestre"
-        app:layout_constraintTop_toBottomOf="@+id/tilSemestre">
+        android:text="Materias"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spnSemestre" />
 
-        <AutoCompleteTextView
-            android:id="@+id/actvListaMaterias"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:inputType="none"
-            app:dropDownBackgroundTint="@color/white" />
-
-    </com.google.android.material.textfield.TextInputLayout>
+    <Spinner
+        android:id="@+id/spnMaterias"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lblMaterias" />
 
     <ListView
         android:id="@+id/lvAlumnos"
@@ -76,6 +75,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tilMaterias" />
+        app:layout_constraintTop_toBottomOf="@+id/spnMaterias"
+        tools:listitem="@layout/item_alumno" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

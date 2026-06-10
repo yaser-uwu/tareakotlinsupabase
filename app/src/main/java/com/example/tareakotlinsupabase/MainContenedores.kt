@@ -1,13 +1,12 @@
 package com.example.tareakotlinsupabase
 
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.ListView
-import androidx.activity.enableEdgeToEdge
+import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.tareakotlinsupabase.adapters.AlumnoAdapter
 import com.example.tareakotlinsupabase.models.Alumno
@@ -21,72 +20,98 @@ import kotlinx.coroutines.launch
 
 class MainContenedores : AppCompatActivity() {
 
+    private lateinit var spnMaterias: Spinner
+    private lateinit var lvAlumnos: ListView
+    private var ignorarMateriaInicial = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main_contenedores)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        val spnSemestre = findViewById<Spinner>(R.id.spnSemestre)
+        spnMaterias = findViewById(R.id.spnMaterias)
+        lvAlumnos = findViewById(R.id.lvAlumnos)
+
+        spnMaterias.adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            listOf("Selecciona una materia")
+        )
+
+        spnSemestre.adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            resources.getStringArray(R.array.niveles)
+        )
+
+        spnSemestre.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                cargarMaterias(position + 1)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
         }
 
-        val actvMaterias = findViewById<AutoCompleteTextView>(R.id.actvListaMaterias)
-        val actvListaNiveles = findViewById<AutoCompleteTextView>(R.id.actvListaNiveles)
-        val lvAlumnos = findViewById<ListView>(R.id.lvAlumnos)
+        spnMaterias.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (ignorarMateriaInicial) {
+                    ignorarMateriaInicial = false
+                    return
+                }
+                if (position == 0) return
+                cargarAlumnos()
+            }
 
-        actvListaNiveles.setOnItemClickListener { _, _, position, _ ->
-            actvMaterias.setText("")
+            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+        }
+    }
+
+    private fun cargarMaterias(nivel: Int) {
+        lifecycleScope.launch {
             val lstMaterias = ArrayList<String>()
-            lifecycleScope.launch {
-                try {
-                    val listaMaterias = ArrayList(
-                        SupabaseManager.client
-                            .from("materias")
-                            .select {
-                                filter {
-                                    eq("nivel", position + 1)
-                                }
-                                order("nombre", Order.ASCENDING)
-                            }
-                            .decodeList<Materia>()
-                    )
-
-                    for (materia in listaMaterias) {
-                        lstMaterias.add(materia.nombre ?: "")
+            try {
+                val listaMaterias = SupabaseManager.client
+                    .from("materias")
+                    .select {
+                        filter { eq("nivel", nivel) }
+                        order("nombre", Order.ASCENDING)
                     }
-                } catch (e: RestException) {
-                    SupabaseErrorHandler.show(this@MainContenedores, e)
-                    lstMaterias.clear()
-                } finally {
-                    val adapter = ArrayAdapter(
-                        this@MainContenedores,
-                        android.R.layout.simple_spinner_dropdown_item,
-                        lstMaterias
-                    )
-                    actvMaterias.setAdapter(adapter)
+                    .decodeList<Materia>()
+
+                lstMaterias.add("Selecciona una materia")
+                for (materia in listaMaterias) {
+                    lstMaterias.add(materia.nombre ?: "")
                 }
+            } catch (e: RestException) {
+                SupabaseErrorHandler.show(this@MainContenedores, e)
+            } finally {
+                ignorarMateriaInicial = true
+                spnMaterias.adapter = ArrayAdapter(
+                    this@MainContenedores,
+                    android.R.layout.simple_spinner_dropdown_item,
+                    lstMaterias
+                )
             }
         }
+    }
 
-        actvMaterias.setOnItemClickListener { _, _, _, _ ->
-            lifecycleScope.launch {
-                val lstAlumnos = try {
-                    ArrayList(
-                        SupabaseManager.client
-                            .from("alumnos")
-                            .select {
-                                order("nombres", Order.ASCENDING)
-                            }
-                            .decodeList<Alumno>()
-                    )
-                } catch (e: RestException) {
-                    SupabaseErrorHandler.show(this@MainContenedores, e)
-                    ArrayList()
-                }
-
-                lvAlumnos.adapter = AlumnoAdapter(this@MainContenedores, lstAlumnos)
+    private fun cargarAlumnos() {
+        lifecycleScope.launch {
+            val lstAlumnos = try {
+                ArrayList(
+                    SupabaseManager.client
+                        .from("alumnos")
+                        .select {
+                            order("nombres", Order.ASCENDING)
+                        }
+                        .decodeList<Alumno>()
+                )
+            } catch (e: RestException) {
+                SupabaseErrorHandler.show(this@MainContenedores, e)
+                ArrayList()
             }
+
+            lvAlumnos.adapter = AlumnoAdapter(this@MainContenedores, lstAlumnos)
         }
     }
 }
