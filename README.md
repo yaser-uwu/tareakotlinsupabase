@@ -51,7 +51,7 @@ La aplicación permite realizar consultas de estudiantes a través de dos filtro
 
 ## Evidencias de Funcionamiento
 
-Las capturas de pantalla de la aplicación pueden agregarse en la carpeta:
+
 
 <img width="513" height="956" alt="image" src="https://github.com/user-attachments/assets/b86fe6f2-89b5-41c5-b8d8-c36deb0461dc" />
 
